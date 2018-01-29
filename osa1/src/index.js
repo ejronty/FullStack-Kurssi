@@ -2,66 +2,56 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 
-const App = () => {
-  const kurssi = {
-    nimi: 'Half Stack -sovelluskehitys',
-    osat: [
-      {
-        nimi: 'Reactin perusteet',
-        tehtavia: 10
-      },
-      {
-        nimi: 'Tiedonvälitys propseilla',
-        tehtavia: 7
-      },
-      {
-        nimi: 'Komponenttien tila',
-        tehtavia: 14
-      }
-    ]
+class App extends React.Component {
+  constructor() {
+    super()
+    this.state = {
+      hyvä: 0,
+      neutraali: 0,
+      huono: 0
+    }
   }
 
-  return (
-    <div>
-      <Otsikko kurssi={kurssi.nimi} />
-      <Sisalto osat={kurssi.osat} />
-      <Yhteensa osat={kurssi.osat} />
-    </div>
-  )
+  arvioHyva = () => {
+    this.setState({
+      hyvä: this.state.hyvä + 1
+    })
+  }
+
+  arvioHuono = () => {
+    this.setState({
+      huono: this.state.huono + 1
+    })
+  }
+
+  arvioNeut = () => {
+    this.setState({
+      neutraali: this.state.neutraali +1
+    })
+  }
+
+  render() {
+    return (
+      <div>
+        <h1>Anna palautetta</h1>
+        <button onClick={this.arvioHyva}>Hyvä</button>
+        <button onClick={this.arvioNeut}>Neutraali</button>
+        <button onClick={this.arvioHuono}>Huono</button>
+
+        <h1>Statistiikka</h1>
+        <p>Hyvä {this.state.hyvä}</p>
+        <p>Neutraali {this.state.neutraali}</p>
+        <p>Huono {this.state.huono}</p>
+      </div>
+    )
+  }
 }
 
-const Otsikko = (props) => {
-  return(
-    <div>
-      <h1>{props.kurssi}</h1>
-    </div>
-  )
-}
+ReactDOM.render(
+  <App />,
+  document.getElementById('root')
+)
 
-const Sisalto = (props) => {
-  return (
-    <div>
-      <Osa osa={props.osat[0]} />
-      <Osa osa={props.osat[1]} />
-      <Osa osa={props.osat[2]} />
-    </div>
-  )
-}
 
-const Osa = (props) => {
-  return (
-    <div>
-      <p>{props.osa.nimi} {props.osa.tehtavia}</p>
-    </div>
-  )
-}
 
-const Yhteensa = (props) => {
-  return (
-    <div>
-      <p>Yhteensa {props.osat[0].tehtavia + props.osat[1].tehtavia + props.osat[2].tehtavia} tehtävää</p>
-    </div>
-  )
-}
 
-ReactDOM.render(<App />, document.getElementById('root'));
