@@ -61,6 +61,14 @@ const Statistic = (props) => {
 }
 
 const Statistics = (props) => {
+  if (props.tiedot.yhteensa === 0) {
+    return (
+      <div>
+        <h1>Statistiikka</h1>
+        <p>Ei yhtään palautetta annettu</p>
+      </div>
+    )
+  }
   return (
     <div>
       <h1>Statistiikka</h1>
