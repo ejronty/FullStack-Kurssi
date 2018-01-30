@@ -35,24 +35,50 @@ class App extends React.Component {
   }
 
   render() {
-    const keskiarvo = () => (this.state.hyvä - this.state.huono) / this.state.yhteensa
-    const positiiviset = () => (this.state.hyvä / this.state.yhteensa) * 100
     return (
       <div>
         <h1>Anna palautetta</h1>
-        <button onClick={this.arvioHyva}>Hyvä</button>
-        <button onClick={this.arvioNeut}>Neutraali</button>
-        <button onClick={this.arvioHuono}>Huono</button>
+        <Button handleClick={this.arvioHyva} text="Hyvä" />
+        <Button handleClick={this.arvioNeut} text="Neutraali" />
+        <Button handleClick={this.arvioHuono} text="Huono" />
 
-        <h1>Statistiikka</h1>
-        <p>Hyvä {this.state.hyvä}</p>
-        <p>Neutraali {this.state.neutraali}</p>
-        <p>Huono {this.state.huono}</p>
-        <p>Keskiarvo {keskiarvo()}</p>
-        <p>Positiivisia {positiiviset()} %</p>
+        <Statistics tiedot={this.state} />
       </div>
     )
   }
+}
+
+const Button = ({handleClick, text}) => (
+  <button onClick={handleClick}>
+    {text}
+  </button>
+)
+
+const Statistic = (props) => {
+  return (
+    <p>{props.name} {props.value}</p>
+  )
+}
+
+const Statistics = (props) => {
+  return (
+    <div>
+      <h1>Statistiikka</h1>
+      <Statistic name='Hyvä' value={props.tiedot.hyvä} />
+      <Statistic name='Neutraali' value={props.tiedot.neutraali} />
+      <Statistic name='Huono' value={props.tiedot.huono} />
+      <Statistic name='Keskiarvo' value={Keskiarvo(props.tiedot)} />
+      <Statistic name='Positiivisia' value={Positiiviset(props.tiedot)} />
+    </div>
+  )
+}
+
+const Keskiarvo = (props) => {
+  return ((props.hyvä - props.huono) / props.yhteensa)
+}
+
+const Positiiviset = (props) => {
+  return (props.hyvä / props.yhteensa *100)
 }
 
 ReactDOM.render(
