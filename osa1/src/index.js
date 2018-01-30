@@ -34,13 +34,23 @@ class App extends React.Component {
     })
   }
 
+  arvioi = (arvio) => {
+    if (arvio === 'Hyvä') {
+      return () => {this.arvioHyva()}
+    }else if (arvio === 'Huono') {
+      return () => {this.arvioHuono()}
+    }else if (arvio === 'Neutraali') {
+      return () => {this.arvioNeut()}
+    }
+  }
+
   render() {
     return (
       <div>
         <h1>Anna palautetta</h1>
-        <Button handleClick={this.arvioHyva} text="Hyvä" />
-        <Button handleClick={this.arvioNeut} text="Neutraali" />
-        <Button handleClick={this.arvioHuono} text="Huono" />
+        <Button handleClick={this.arvioi('Hyvä')} text="Hyvä" />
+        <Button handleClick={this.arvioi('Neutraali')} text="Neutraali" />
+        <Button handleClick={this.arvioi('Huono')} text="Huono" />
 
         <Statistics tiedot={this.state} />
       </div>
