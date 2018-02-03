@@ -20,7 +20,7 @@ const App = () => {
         nimi: 'Komponenttien tila',
         tehtavia: 14,
         id: 3
-      },
+      }
     ]
   }
 
@@ -36,7 +36,7 @@ const Kurssi = (props) => {
     <div>
       <Otsikko kurssi={props.kurssi.nimi} />
       <Sisalto osat={props.kurssi.osat} />
-      {/*<Yhteensa osat={props.kurssi.osat} />*/}
+      <Yhteensa osat={props.kurssi.osat} />
     </div>
   )
 }
@@ -64,13 +64,15 @@ const Osa = (props) => {
     </div>
   )
 }
-/*
+
 const Yhteensa = (props) => {
+  const tehtavat = props.osat.map(osa => osa.tehtavia)
+  const reducer = (accumulator, currentValue) => accumulator + currentValue
   return (
     <div>
-      <p>Yhteensa {props.osat[0].tehtavia + props.osat[1].tehtavia + props.osat[2].tehtavia} tehtävää</p>
+      <p>Yhteensa {tehtavat.reduce(reducer)} tehtävää</p>
     </div>
   )
 }
-*/
+
 ReactDOM.render(<App />, document.getElementById('root'));
