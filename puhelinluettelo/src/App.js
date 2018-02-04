@@ -17,16 +17,26 @@ class App extends React.Component {
 
   addName = (event) => {
     event.preventDefault()
-    const personObject = {
-      name: this.state.newName
+
+    const namelist = this.state.persons.map(person => person.name)
+
+    if (!namelist.includes(this.state.newName)) {
+      const personObject = {
+        name: this.state.newName
+      }
+  
+      const persons = this.state.persons.concat(personObject)
+  
+      this.setState({
+        persons: persons,
+        newName: ''
+      })
+    } else {
+      alert('Nimi löytyy jo luettelosta!')
+      this.setState({
+        newName: ''
+      })
     }
-
-    const persons = this.state.persons.concat(personObject)
-
-    this.setState({
-      persons: persons,
-      newName: ''
-    })
   }
 
   render() {
