@@ -55,6 +55,18 @@ class App extends React.Component {
     }
   }
 
+  removePerson = (id) => {
+    return () => {
+      personService
+        .deletePerson(id)
+        .then(response => {
+          this.setState({
+            persons: this.state.persons.filter(p => p.id !== id)
+          })
+        })
+    }
+  }
+
   componentDidMount() {
     personService
       .getAll()
@@ -83,7 +95,7 @@ class App extends React.Component {
           </div>
         </form>
         <h2>Numerot</h2>
-        <Numerot tila={this.state} />
+        <Numerot tila={this.state} funktio={this.removePerson} />
       </div>
     )
   }
@@ -98,7 +110,7 @@ const Numerot = (props) => {
   return (
     <table>
       <tbody>
-        {naytettavat.map(person => <Person key={person.name} name={person.name} number={person.number} />)}
+        {naytettavat.map(person => <Person key={person.name} person={person} funktio={props.funktio} />)}
       </tbody>
     </table>
   )
@@ -107,8 +119,9 @@ const Numerot = (props) => {
 const Person = (props) => {
   return (
     <tr>
-      <td>{props.name}</td>
-      <td>{props.number}</td>
+      <td>{props.person.name}</td>
+      <td>{props.person.number}</td>
+      <td><button onClick={props.funktio(props.person.id)}>Poista</button></td>
     </tr>
   )
 }
