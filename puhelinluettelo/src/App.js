@@ -1,14 +1,11 @@
-import React from 'react';
+import React from 'react'
+import axios from 'axios'
 
 class App extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      persons: [
-        { name: 'Arto Hellas',
-          number: '11111111'
-        }
-      ],
+      persons: [],
       newName: '',
       newNumber: '',
       filter: ''
@@ -52,6 +49,14 @@ class App extends React.Component {
         newNumber: ''
       })
     }
+  }
+
+  componentDidMount() {
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        this.setState({persons: response.data})
+      })
   }
 
   render() {
