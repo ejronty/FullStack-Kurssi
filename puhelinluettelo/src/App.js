@@ -28,13 +28,12 @@ class App extends React.Component {
     event.preventDefault()
 
     const namelist = this.state.persons.map(person => person.name)
+    const personObject = {
+      name: this.state.newName,
+      number: this.state.newNumber
+    }
 
     if (!namelist.includes(this.state.newName)) {
-      const personObject = {
-        name: this.state.newName,
-        number: this.state.newNumber
-      }
-
 
       personService
         .create(personObject)
@@ -47,23 +46,36 @@ class App extends React.Component {
         })
   
     } else {
-      alert('Nimi löytyy jo luettelosta!')
-      this.setState({
-        newName: '',
-        newNumber: ''
-      })
+      if (window.confirm(`${personObject.name} on jo luettelossa. Korvataanko vanha numero uudella?`)){
+        const henkilo = this.state.persons.find(p => p.name === this.state.newName)
+        const changedPerson = {...henkilo, number: this.state.newNumber}
+        
+        personService
+          .update(henkilo.id, personObject)
+          .then(response => {
+            this.setState({
+              persons: this.state.persons.map(person => person.name !== this.state.newName ? person : changedPerson),
+              newName: '',
+              newNumber: ''
+            })
+          })
+      }
+
     }
   }
 
   removePerson = (id) => {
     return () => {
-      personService
-        .deletePerson(id)
-        .then(response => {
-          this.setState({
-            persons: this.state.persons.filter(p => p.id !== id)
+      const henk = this.state.persons.find(p => p.id === id)
+      if (window.confirm(`Poistetaanko ${henk.name}?`)){
+        personService
+          .deletePerson(id)
+          .then(response => {
+            this.setState({
+              persons: this.state.persons.filter(p => p.id !== id)
+            })
           })
-        })
+      }
     }
   }
 
