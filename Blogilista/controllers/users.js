@@ -20,6 +20,15 @@ userRouter.post('/', async (req, res) => {
   try {
     const body = req.body
 
+    const existingUser = await User.find({username: body.username})
+    if (existingUser.length > 0) {
+      return res.status(400).json({error: 'Username must be unique'})
+    }
+
+    if (body.password.length < 3) {
+      return res.status(400).json({error: 'Password must be at least 3 characters long'})
+    }
+
     const saltRounds = 10
     const passwordHash = await bcrypt.hash(body.password, saltRounds) 
 
@@ -27,7 +36,7 @@ userRouter.post('/', async (req, res) => {
       username: body.username,
       name: body.name,
       passwordHash,
-      adult: body.adult === undefined ? false : body.adult
+      adult: body.adult === undefined ? true : body.adult
     })
 
     const savedUser = await user.save()

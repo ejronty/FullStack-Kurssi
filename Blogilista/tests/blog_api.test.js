@@ -2,7 +2,8 @@ const supertest = require('supertest')
 const {app, server} = require('../index')
 const api = supertest(app)
 const Blog = require('../models/blog')
-const {format, initialBlogs, nonExistingId, blogsInDb} = require('./test_helper')
+const User = require('../models/user')
+const {format, initialBlogs, nonExistingId, blogsInDb, usersInDb} = require('./test_helper')
 
 
 describe('Some blogs initially in database', async () => {
@@ -113,6 +114,71 @@ describe('Some blogs initially in database', async () => {
     expect(blog.likes).toBe(0)
   })
   
+  afterAll( () => {
+    server.close()
+  })
+})
+
+describe('One user initially in database', async () => {
+  beforeAll(async () => {
+    await User.remove({})
+    const user = new User({username: 'testi', password: 'jeejee', name: 'TestiHenkilo', adult: true})
+    await user.save()
+  })
+
+  test('Adding a new user works', async () => {
+    const alkuTilanne = await usersInDb()
+
+    const newUser = {
+      username: 'Uusi',
+      name: 'UusiKayttaja',
+      password: 'jippii'
+    }
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    const loppuTilanne = await usersInDb()
+    expect(loppuTilanne.length).toBe(alkuTilanne.length + 1)
+    const usernames = loppuTilanne.map(u => u.username)
+    expect(usernames).toContain(newUser.username)
+  })
+
+  test('Adding an invalid will not work', async () => {
+    const alku = await usersInDb()
+
+    const faultyUsername = {
+      username: 'testi',
+      name: 'asdfgh',
+      password: 'asdfgh'
+    }
+
+    const poorPassword = {
+      username: 'unique',
+      name: 'ErilainenNimi',
+      password: 'je'
+    }
+
+    await api
+      .post('/api/users')
+      .send(faultyUsername)
+      .expect(400)
+
+    const vali = await usersInDb()
+
+    await api
+      .post('api/users')
+      .send(poorPassword)
+      .expect(400)
+
+    const loppu = await usersInDb()
+    expect(vali.length).toBe(alku.length)
+    expect(loppu.length).toBe(alku.length)
+  })
+
   afterAll( () => {
     server.close()
   })
