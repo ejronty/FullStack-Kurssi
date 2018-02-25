@@ -85,6 +85,49 @@ test('There is a blog about tests', async () => {
   expect(contents).toContain('First class tests')
 })
 
+test('Adding new blogs works as it should', async () => {
+  const newBlog = {
+    title: 'Paras blogi ikinä',
+    author: 'Minä',
+    url: 'Jossain päin maailmaa',
+    likes: '73'
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  const response = await api
+    .get('/api/blogs')
+
+  const titles = response.body.map(blog => blog.title)
+
+  expect(response.body.length).toBe(initialBlogs.length + 1)
+  expect(titles).toContain('Paras blogi ikinä')
+})
+
+test('Blog without title cannot be added', async () => {
+  const newBlog = {
+    author: 'jee',
+    url: 'jeejee',
+  }
+
+  const initBlogs = await api
+    .get('/api/blogs')
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
+
+  const response = await api
+    .get('/api/blogs')
+
+  expect(response.body.length).toBe(initBlogs.body.length)
+})
+
 afterAll( () => {
   server.close()
 })
