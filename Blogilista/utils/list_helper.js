@@ -9,7 +9,28 @@ const totalLikes = (blogs) => {
   return blogs.length === 0 ? 0 : blogs.map(blog => blog.likes).reduce(reducer, 0)
 }
 
+const favoriteBlog = (blogs) => {
+  let maxLikes = 0
+  let suosituin = ''
+  
+  blogs.forEach(blog => {
+    if (blog.likes > maxLikes) {
+      maxLikes = blog.likes
+      suosituin = blog
+    }
+  })
+
+  return (
+    {
+      "title": suosituin.title,
+      "author": suosituin.author,
+      "likes": suosituin.likes
+    }
+  )
+}
+
 module.exports = {
   dummy,
-  totalLikes
+  totalLikes,
+  favoriteBlog
 }
