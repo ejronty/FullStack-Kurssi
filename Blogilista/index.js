@@ -3,39 +3,12 @@ const app = express()
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const mongoose = require('mongoose')
-
-const Blog = mongoose.model('Blog', {
-  title: String,
-  author: String,
-  url: String,
-  likes: Number
-})
-
-module.exports = Blog
+const Blog = require('./models/blog')
+const blogRouter = require('./controllers/blogit')
 
 app.use(cors())
 app.use(bodyParser.json())
-
-const mongoUrl = 'mongodb://<user>:<pwd>@ds149138.mlab.com:49138/elmonblogit'
-mongoose.connect(mongoUrl)
-
-app.get('/api/blogs', (request, response) => {
-  Blog
-    .find({})
-    .then(blogs => {
-      response.json(blogs)
-    })
-})
-
-app.post('/api/blogs', (request, response) => {
-  const blog = new Blog(request.body)
-
-  blog
-    .save()
-    .then(result => {
-      response.status(201).json(result)
-    })
-})
+app.use('/api/blogs', blogRouter)
 
 const PORT = 3003
 app.listen(PORT, () => {
