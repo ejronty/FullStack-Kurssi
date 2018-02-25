@@ -108,10 +108,15 @@ test('Adding new blogs works as it should', async () => {
   expect(titles).toContain('Paras blogi ikinä')
 })
 
-test('Blog without title cannot be added', async () => {
+test('Blog without title or url cannot be added', async () => {
   const newBlog = {
     author: 'jee',
     url: 'jeejee',
+  }
+
+  const anotherBlog = {
+    title: 'Osoitteeton blogi',
+    author: 'Joku kaveri'
   }
 
   const initBlogs = await api
@@ -122,10 +127,33 @@ test('Blog without title cannot be added', async () => {
     .send(newBlog)
     .expect(400)
 
+  await api
+    .post('/api/blogs')
+    .send(anotherBlog)
+    .expect(400)
+
   const response = await api
     .get('/api/blogs')
 
   expect(response.body.length).toBe(initBlogs.body.length)
+})
+
+test('If likes undefined, they are initiated to 0', async () => {
+  const newBlog = {
+    title: 'Tästä ei tykätä',
+    author: 'Kirjoittaja',
+    url: 'osoite'
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+
+  const response = await api
+    .get('/api/blogs')
+  
+  const blog = response.body.find(b => b.title === 'Tästä ei tykätä')
+  expect(blog.likes).toBe(0)
 })
 
 afterAll( () => {
