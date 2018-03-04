@@ -56,6 +56,33 @@ class App extends React.Component {
       })
   }
 
+  updateBlog = async (blog) => {
+    const blogObject = {
+      title: blog.title,
+      author: blog.author,
+      url: blog.url,
+      likes: blog.likes + 1,
+      user: (blog.user === undefined ? null : blog.user._id)
+    }
+    try {
+      await blogService.update(blog.id, blogObject)
+      this.setState({ blogs: await blogService.getAll()})
+    } catch (exception) {
+      console.log(exception)
+    }
+  }
+
+  removeBlog = async (blog) => {
+    try {
+      if (window.confirm(`Are you sure you want to delete '${blog.title}' by ${blog.author}?`)) {
+        await blogService.remove(blog.id)
+        this.setState({ blogs: await blogService.getAll()})
+      }
+    } catch (exception) {
+      console.log(exception)
+    }
+  }
+
   login = async (event) => {
     event.preventDefault()
     try {
@@ -89,6 +116,10 @@ class App extends React.Component {
 
   handleFieldChange = (event) => {
     this.setState({ [event.target.name]: event.target.value })
+  }
+
+  sortByLikes = (a, b) => {
+    return b.likes - a.likes
   }
 
 
@@ -139,11 +170,11 @@ class App extends React.Component {
               {blogForm()}
             </div>
             <div>
-              <p>
-                {this.state.blogs.map(blog => 
-                  <Blog key={blog._id} blog={blog}/>
+              <div>
+                {this.state.blogs.sort(this.sortByLikes).map(blog => 
+                  <Blog key={blog.id} blog={blog} handler={this.updateBlog} remover={this.removeBlog}/>
                 )}
-              </p>
+              </div>
             </div>
           </div>
         }

@@ -33,8 +33,9 @@ class Blog extends React.Component {
         <div style={blogStyle}>
           <div onClick={this.toggleExpansion}>{this.props.blog.title} {this.props.blog.author}</div>
           <div>{this.props.blog.url}</div>
-          <div>{this.props.blog.likes} likes <button>Like</button></div>
+          <div>{this.props.blog.likes} likes <button onClick={() => this.props.handler(this.props.blog)}>Like</button></div>
           <div>Added by: {this.props.blog.user === undefined ? 'Unknown' : this.props.blog.user.name}</div>
+          <button onClick={() => this.props.remover(this.props.blog)}>Delete</button>
         </div>
       )
     }
