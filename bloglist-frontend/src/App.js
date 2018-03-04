@@ -2,6 +2,9 @@ import React from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import Togglable from './components/togglable'
+import LoginForm from './components/LoginForm'
+import BlogForm from './components/BlogForm'
 
 class App extends React.Component {
   constructor(props) {
@@ -14,7 +17,8 @@ class App extends React.Component {
       username: '',
       password: '',
       user: null,
-      error: null
+      error: null,
+      loginVisible: false
     }
   }
 
@@ -33,6 +37,7 @@ class App extends React.Component {
 
   addBlog = (event) => {
     event.preventDefault()
+    this.blogForm.toggleVisibility()
     const blogObject = {
       title: this.state.newTitle,
       author: this.state.newAuthor,
@@ -82,22 +87,6 @@ class App extends React.Component {
     }
   }
 
-  handleTitleChange = (event) => {
-    this.setState({ newTitle: event.target.value })
-  }
-
-  handleAuthorChange = (event) => {
-    this.setState({ newAuthor: event.target.value})
-  }
-
-  handleUrlChange = (event) => {
-    this.setState({ newUrl: event.target.value})
-  }
-
-  handleBlogFormChange = (event) => {
-    this.setState({ [event.target.name]: event.target.value })
-  }
-
   handleFieldChange = (event) => {
     this.setState({ [event.target.name]: event.target.value })
   }
@@ -106,68 +95,27 @@ class App extends React.Component {
   render() {
 
     const loginForm = () => (
-      <div>
-        <h2>Login</h2>
-
-        <form onSubmit={this.login}>
-          <div>
-            Username
-            <input
-              type='text'
-              name='username'
-              value={this.state.username}
-              onChange={this.handleFieldChange}
-            />
-          </div>
-          <div>
-            Password
-            <input
-              type='password'
-              name='password'
-              value={this.state.password}
-              onChange={this.handleFieldChange}
-            />
-          </div>
-          <button type='submit'>Login</button>
-        </form>
-      </div>
+      <Togglable buttonLabel='Login'>
+        <LoginForm
+          visible={this.state.loginVisible}
+          username={this.state.username}
+          password={this.state.password}
+          handleChange={this.handleFieldChange}
+          handleSubmit={this.login}
+        />
+      </Togglable>
     )
 
     const blogForm = () => (
-      <div>
-        <h2>Add a new blog</h2>
-
-        <form onSubmit={this.addBlog}>
-          <div>
-            Title
-            <input
-              type='text'
-              name='newTitle'
-              value={this.state.newTitle}
-              onChange={this.handleFieldChange}
-            />
-          </div>
-          <div>
-            Author
-            <input
-              type='text'
-              name='newAuthor'
-              value={this.state.newAuthor}
-              onChange={this.handleFieldChange}
-            />
-          </div>
-          <div>
-            Url
-            <input
-              type='text'
-              name='newUrl'
-              value={this.state.newUrl}
-              onChange={this.handleFieldChange}
-            />
-          </div>
-          <button type='submit'>Add blog</button>
-        </form>
-      </div>
+      <Togglable buttonLabel='Add a blog' ref={component => this.blogForm = component}>
+        <BlogForm
+          onSubmit={this.addBlog}
+          handleChange={this.handleFieldChange}
+          title={this.newTitle}
+          author={this.newAuthor}
+          url={this.newUrl}
+        />
+      </Togglable>
     )
 
     const logoutForm = () => (
