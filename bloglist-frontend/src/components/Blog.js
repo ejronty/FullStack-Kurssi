@@ -25,14 +25,14 @@ class Blog extends React.Component {
     if (!this.state.expanded) {
       return (
         <div style={blogStyle}>
-          <div onClick={this.toggleExpansion}>{this.props.blog.title} {this.props.blog.author}</div>
+          <div className='title' onClick={this.toggleExpansion}>{this.props.blog.title} {this.props.blog.author}</div>
         </div>
       )
     } else if (this.state.expanded) {
       return (
         <div style={blogStyle}>
-          <div onClick={this.toggleExpansion}>{this.props.blog.title} {this.props.blog.author}</div>
-          <div>{this.props.blog.url}</div>
+          <div className='title' onClick={this.toggleExpansion}>{this.props.blog.title} {this.props.blog.author}</div>
+          <div className='url'>{this.props.blog.url}</div>
           <div>{this.props.blog.likes} likes <button onClick={() => this.props.handler(this.props.blog)}>Like</button></div>
           <div>Added by: {this.props.blog.user === undefined ? 'Unknown' : this.props.blog.user.name}</div>
           <button onClick={() => this.props.remover(this.props.blog)}>Delete</button>
