@@ -164,13 +164,13 @@ class App extends React.Component {
         {this.state.user === null ?
           loginForm() :
           <div>
-            <div>
+            <div className='userIn'>
               {logoutForm()}
 
               {blogForm()}
             </div>
             <div>
-              <div>
+              <div className='blogit'>
                 {this.state.blogs.sort(this.sortByLikes).map(blog => 
                   <Blog key={blog.id} blog={blog} handler={this.updateBlog} remover={this.removeBlog}/>
                 )}
