@@ -25,7 +25,6 @@ describe('<App />', () => {
 
   describe('When user IS logged in', () => {
     beforeEach(() => {
-      app = mount(<App />)
 
       const user = {
         username: 'testiHenkilo',
@@ -34,6 +33,9 @@ describe('<App />', () => {
       }
 
       window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
+      console.log(window.localStorage.getItem('loggedBlogappUser'))
+
+      app = mount(<App />)
     })
 
     it('Blogs are rendered', () => {
