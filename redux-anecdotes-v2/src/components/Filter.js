@@ -1,10 +1,10 @@
 import React from 'react'
 import { filterChange } from '../reducers/filterReducer'
-import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 
 class Filter extends React.Component {
   handleChange = (event) => {
-    this.context.store.dispatch(filterChange(event.target.value))
+    this.props.filterChange(event.target.value)
   }
 
   render() {
@@ -20,8 +20,7 @@ class Filter extends React.Component {
   }
 }
 
-Filter.contextTypes = {
-  store: PropTypes.object
-}
-
-export default Filter
+export default connect(
+  null,
+  { filterChange }
+) (Filter)
