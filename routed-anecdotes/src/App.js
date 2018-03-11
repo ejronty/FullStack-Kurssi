@@ -1,13 +1,23 @@
 import React from 'react'
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
+import { BrowserRouter as Router, Route, NavLink, Link } from 'react-router-dom'
 
 const Menu = () => (
-  <div>    
-    <a href='#'>anecdotes</a>&nbsp;
-    <a href='#'>create new</a>&nbsp;
-    <a href='#'>about</a>&nbsp;
+  <div style={menuStyle}>    
+    <NavLink exact to='/' activeStyle={aMenuStyle}>Anecdotes</NavLink> &nbsp;
+    <NavLink exact to='/create' activeStyle={aMenuStyle}>CreateNew</NavLink> &nbsp;
+    <NavLink exact to='/about' activeStyle={aMenuStyle}>About</NavLink>&nbsp;
   </div>
 )
+
+const menuStyle = {
+  border: 'solid',
+  borderWidth: 1,
+  backgroundColor: 'lightblue'
+}
+
+const aMenuStyle = {
+  backgroundColor: 'lightgreen'
+}
 
 const AnecdoteList = ({ anecdotes }) => (
   <div>
@@ -114,6 +124,12 @@ const Notification = ({message}) => {
   )
 }
 
+const notifStyle = {
+  padding: 10,
+  color: 'green',
+  fontStyle: 'italic'
+}
+
 class App extends React.Component {
   constructor() {
     super()
@@ -143,7 +159,7 @@ class App extends React.Component {
     anecdote.id = (Math.random() * 10000).toFixed(0)
     this.setState({
       anecdotes: this.state.anecdotes.concat(anecdote),
-      notification: `A new anecdote' ${anecdote.content}' created!`
+      notification: `A new anecdote '${anecdote.content}' created!`
     })
     setTimeout(() => {
       this.setState({ notification: '' })
@@ -166,17 +182,16 @@ class App extends React.Component {
     this.setState({ anecdotes })
   }
 
+
   render() {
     return (
       <div>
         <Router>
           <div>
             <div>
-              <Link to='/'>Anecdotes</Link> &nbsp;
-              <Link to='/create'>CreateNew</Link> &nbsp;
-              <Link to='/about'>About</Link>
+              <Menu />
             </div>
-            <div>
+            <div style={notifStyle}>
               <Notification message={this.state.notification}/>
             </div>
             <Route exact path='/' render={() => <AnecdoteList anecdotes={this.state.anecdotes} />} />
