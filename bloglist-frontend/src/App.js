@@ -1,10 +1,14 @@
 import React from 'react'
 import Blog from './components/Blog'
+import User from './components/user'
+import SingleUser from './components/SingleUser'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import userService from './services/users'
 import Togglable from './components/togglable'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
+import { BrowserRouter as Router, Route, NavLink, Redirect } from 'react-router-dom'
 
 class App extends React.Component {
   constructor(props) {
@@ -18,14 +22,20 @@ class App extends React.Component {
       password: '',
       user: null,
       error: null,
-      loginVisible: false
+      loginVisible: true,
+      users: []
     }
   }
 
-  componentDidMount() {
-    blogService.getAll().then(blogs =>
-      this.setState({ blogs })
-    )
+  componentDidMount = async () => {
+    const blogit = await blogService.getAll()
+    const kayttajat = await userService.getAll()
+
+    this.setState({
+      blogs: blogit,
+      users: kayttajat
+    })
+
 
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
@@ -122,20 +132,11 @@ class App extends React.Component {
     return b.likes - a.likes
   }
 
+  userById = (id) => 
+    this.state.users.find(u => u.id === id)
+  
 
   render() {
-
-    const loginForm = () => (
-      <Togglable buttonLabel='Login'>
-        <LoginForm
-          visible={this.state.loginVisible}
-          username={this.state.username}
-          password={this.state.password}
-          handleChange={this.handleFieldChange}
-          handleSubmit={this.login}
-        />
-      </Togglable>
-    )
 
     const blogForm = () => (
       <Togglable buttonLabel='Add a blog' ref={component => this.blogForm = component}>
@@ -149,36 +150,91 @@ class App extends React.Component {
       </Togglable>
     )
 
-    const logoutForm = () => (
-      <div>
-        <p>{this.state.user.name} logged in.</p>
-        <button type='button' onClick={this.logout}>Logout</button>
-      </div>
-    )
-
-
-    return (
-      <div>
-        <h1>Super Awesome Blogs!!!</h1>
-
-        {this.state.user === null ?
-          loginForm() :
-          <div>
-            <div className='userIn'>
-              {logoutForm()}
-
-              {blogForm()}
-            </div>
-            <div>
-              <div className='blogit'>
-                {this.state.blogs.sort(this.sortByLikes).map(blog => 
-                  <Blog key={blog.id} blog={blog} handler={this.updateBlog} remover={this.removeBlog}/>
-                )}
-              </div>
-            </div>
-          </div>
+    const Menu = () => (
+      <div style={menuStyle}>
+        <NavLink exact to='/' activeStyle={aMenuStyle}>Blogs</NavLink> &nbsp;
+        <NavLink exact to='/users' activeStyle={aMenuStyle}>Users</NavLink> &nbsp;
+        {this.state.user === null
+          ? <NavLink exact to='/login' activeStyle={aMenuStyle}>Login</NavLink>
+          : <em>{this.state.user.name} logged in <button onClick={this.logout}>Log Out</button></em>
         }
       </div>
+    )
+    
+    const menuStyle = {
+      padding: 10,
+      border: 'solid',
+      borderWidth: 1,
+      backgroundColor: 'lightblue'
+    }
+    
+    const aMenuStyle = {
+      backgroundColor: 'lightgreen'
+    }
+
+    const appStyle = {
+      padding: 15
+    }
+
+    return (
+      <div style={appStyle}>
+        <h1>Super Awesome Blogs!!!</h1>
+
+            <div>
+              <Router>
+                <div>
+                  <div>
+                    <Menu />
+                  </div>
+                  <Route exact path='/' render={() =>
+                    this.state.user
+                      ? <div>
+                          {blogForm()}
+                          <h3>Existing blogs</h3>
+                          <div className='blogit'>
+                            {this.state.blogs.sort(this.sortByLikes).map(blog => 
+                              <Blog key={blog.id} blog={blog} handler={this.updateBlog} remover={this.removeBlog}/>
+                            )}
+                          </div>
+                        </div>
+                      : <Redirect to='/login' />
+                  } />
+                  <Route exact path='/users' render={() => 
+                    this.state.user
+                      ? <div>
+                          <h3>Users</h3>
+                          <table>
+                            <tbody>
+                              <tr>
+                                <th>Name</th>
+                                <th>Blogs added</th>
+                              </tr>
+                              {this.state.users.map(u => 
+                                <User key={u.id} user={u} />
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+                      : <Redirect to='/login' />
+                   }/>
+                  <Route exact path='/users/:id' render={({match}) =>
+                    <SingleUser user={this.userById(match.params.id)} />
+                  } />
+                  <Route path='/login' render={() => 
+                    this.state.user
+                      ? <Redirect to='/' />
+                      : <LoginForm
+                          handleSubmit={this.login}
+                          handleChange={this.handleFieldChange}
+                          username={this.state.username}
+                          password={this.state.password}
+                        />
+                  }/>
+              </div>
+              </Router>
+
+            </div>
+          </div>
     );
   }
 }
