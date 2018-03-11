@@ -218,7 +218,9 @@ class App extends React.Component {
                       : <Redirect to='/login' />
                    }/>
                   <Route exact path='/users/:id' render={({match}) =>
-                    <SingleUser user={this.userById(match.params.id)} />
+                    this.state.user
+                      ? <SingleUser user={this.userById(match.params.id)} />
+                      : <Redirect to='/login' />
                   } />
                   <Route path='/login' render={() => 
                     this.state.user
