@@ -25,7 +25,7 @@ const AnecdoteList = ({ anecdotes }) => (
 const Anecdote = ({ anecdote }) => {
   return (
     <div>
-      <h2>{anecdote.content}</h2>
+      <h2>{anecdote.content} by {anecdote.author}</h2>
       <div>Has {anecdote.votes} votes</div>
       <div>For more info see <a href={`${anecdote.info}`}>{anecdote.info}</a></div>
     </div>
@@ -77,6 +77,8 @@ class CreateNew extends React.Component {
       info: this.state.info,
       votes: 0
     })
+    this.props.history.push('/')
+
   }
 
   render() {
@@ -102,6 +104,14 @@ class CreateNew extends React.Component {
     )
 
   }
+}
+
+const Notification = ({message}) => {
+  return (
+    <div>
+      {message}
+    </div>
+  )
 }
 
 class App extends React.Component {
@@ -131,7 +141,13 @@ class App extends React.Component {
 
   addNew = (anecdote) => {
     anecdote.id = (Math.random() * 10000).toFixed(0)
-    this.setState({ anecdotes: this.state.anecdotes.concat(anecdote) })
+    this.setState({
+      anecdotes: this.state.anecdotes.concat(anecdote),
+      notification: `A new anecdote' ${anecdote.content}' created!`
+    })
+    setTimeout(() => {
+      this.setState({ notification: '' })
+    }, 10000)
   }
 
   anecdoteById = (id) =>
@@ -160,11 +176,14 @@ class App extends React.Component {
               <Link to='/create'>CreateNew</Link> &nbsp;
               <Link to='/about'>About</Link>
             </div>
+            <div>
+              <Notification message={this.state.notification}/>
+            </div>
             <Route exact path='/' render={() => <AnecdoteList anecdotes={this.state.anecdotes} />} />
             <Route exact path='/anecdotes/:id' render={({match}) =>
               <Anecdote anecdote={this.anecdoteById(match.params.id)} /> }
             />
-            <Route path='/create' render={() => <CreateNew />} />
+            <Route path='/create' render={({history}) => <CreateNew addNew={this.addNew} history={history} />} />
             <Route path='/about' render={() => <About />} />
           </div>
         </Router>
